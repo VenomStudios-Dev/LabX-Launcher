@@ -1,0 +1,601 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101710">
+  <title>LabX - Minecraft Launcher</title>
+  <link rel="icon" type="image/png" href="./blokk.png">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;500;700;900&display=swap');
+
+    :root {
+      --bg: #101710;
+      --panel: #1b251d;
+      --panel2: #222f24;
+      --green: #62c94f;
+      --green2: #3b963d;
+      --green-dark: #286b32;
+      --dirt: #65452d;
+      --text: #f2f6ed;
+      --muted: #a5b49f;
+      --border: #3b513b;
+      --danger: #ff9292;
+      --pixel: "Press Start 2P", monospace;
+      --body: "Roboto", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: var(--body);
+      background:
+        radial-gradient(ellipse at 50% -15%, rgba(74, 135, 57, .20), transparent 55%),
+        linear-gradient(rgba(9, 15, 10, .94), rgba(9, 15, 10, .97)),
+        repeating-linear-gradient(0deg, #172219 0 2px, #141e16 2px 4px);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .12;
+      z-index: -1;
+      background-image:
+        linear-gradient(90deg, transparent 49%, rgba(132, 173, 105, .18) 50%, transparent 51%),
+        linear-gradient(transparent 49%, rgba(132, 173, 105, .14) 50%, transparent 51%);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(to bottom, black, transparent 75%);
+    }
+
+    header {
+      min-height: 78px;
+      padding: 13px 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: linear-gradient(180deg, #1b2a1d, #121b14);
+      border-bottom: 3px solid #344b32;
+      box-shadow: 0 5px 0 rgba(0,0,0,.22);
+    }
+
+    .brand { display: flex; align-items: center; gap: 13px; }
+    .logo {
+      width: 46px;
+      height: 46px;
+      object-fit: contain;
+      display: block;
+      border: none;
+      border-radius: 5px;
+    }
+    .brand-name { font-size: 18px; font-weight: 900; letter-spacing: 1px; }
+    .brand-sub { color: #a9c49f; font-size: 10px; margin-top: 5px; letter-spacing: 1.5px; text-transform: uppercase; }
+    .status {
+      color: #c5d7bd;
+      font-size: 11px;
+      text-align: right;
+      padding: 9px 12px;
+      border: 1px solid #40583e;
+      background: rgba(9, 16, 10, .55);
+      border-radius: 4px;
+    }
+
+    main { width: min(1080px, 90%); margin: 34px auto 0; }
+
+    .hero {
+      position: relative;
+      isolation: isolate;
+      min-height: 340px;
+      padding: 48px;
+      border: 3px solid #60794e;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(7, 15, 9, .96) 0%, rgba(7, 15, 9, .72) 46%, rgba(7, 15, 9, .15) 100%),
+        linear-gradient(0deg, rgba(8, 14, 8, .35), transparent 55%),
+        url("https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/screenshots/PDP-US-Bundle-Screenshot-2.png")
+        center 48%/cover;
+      box-shadow: 0 8px 0 rgba(0,0,0,.25), inset 0 0 35px rgba(0,0,0,.25);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      inset: auto 0 0;
+      height: 12px;
+      background: repeating-linear-gradient(90deg, #3d762f 0 32px, #55943b 32px 64px);
+      border-top: 3px solid rgba(174, 218, 125, .65);
+    }
+    .eyebrow {
+      color: #a7ed83;
+      font-family: var(--pixel);
+      font-size: 9px;
+      line-height: 1.8;
+      letter-spacing: 1px;
+      text-shadow: 2px 2px #1a3518;
+    }
+    h1 {
+      max-width: 620px;
+      font-size: clamp(34px, 6vw, 58px);
+      line-height: 1.08;
+      margin: 18px 0;
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      text-shadow: 3px 4px 0 rgba(0,0,0,.55);
+    }
+    .hero p { max-width: 470px; color: #e0eadb; font-size: 15px; line-height: 1.75; text-shadow: 1px 2px 3px #000; }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 20px;
+      margin-top: 23px;
+    }
+    .card {
+      position: relative;
+      padding: 27px;
+      background: linear-gradient(145deg, rgba(32, 47, 34, .98), rgba(22, 32, 24, .98));
+      border: 2px solid #40563d;
+      border-radius: 5px;
+      box-shadow: 0 7px 0 rgba(0,0,0,.24), inset 0 1px rgba(255,255,255,.035);
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: 18px;
+      width: 72px;
+      height: 3px;
+      background: #79c85b;
+    }
+    .card h2 { font-size: 18px; margin-bottom: 9px; font-weight: 900; letter-spacing: .2px; }
+    .description { color: var(--muted); font-size: 12px; line-height: 1.75; }
+    .field { margin-top: 25px; }
+    label { display: block; margin-bottom: 10px; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #c9e4bd; }
+
+    select {
+      width: 100%;
+      padding: 14px 15px;
+      color: white;
+      background: #111b13;
+      border: 2px solid #496247;
+      border-radius: 4px;
+      font: 700 13px var(--body);
+      outline: none;
+      box-shadow: inset 0 3px 8px rgba(0,0,0,.25);
+    }
+    select:focus { border-color: #8bd66b; box-shadow: 0 0 0 3px rgba(105, 190, 76, .16); }
+    select option { background: var(--panel); }
+
+    .play-btn, .secondary-btn, .text-btn {
+      width: 100%;
+      margin-top: 16px;
+      padding: 16px;
+      border: 2px solid rgba(0,0,0,.28);
+      border-radius: 4px;
+      color: white;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .8px;
+      cursor: pointer;
+      transition: transform .15s ease, filter .15s ease, box-shadow .15s ease;
+      box-shadow: 0 5px 0 rgba(0,0,0,.32), inset 0 1px rgba(255,255,255,.22);
+      text-shadow: 1px 2px rgba(0,0,0,.4);
+    }
+    .play-btn {
+      background: linear-gradient(180deg, #65bd45, #398d35);
+      border-color: #2c702e;
+    }
+    .play-btn:hover, .secondary-btn:hover {
+      filter: brightness(1.13);
+      transform: translateY(-2px);
+      box-shadow: 0 7px 0 rgba(0,0,0,.32), inset 0 1px rgba(255,255,255,.22);
+    }
+    .play-btn:active, .secondary-btn:active, .text-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 rgba(0,0,0,.32);
+    }
+    .secondary-btn { background: linear-gradient(180deg, #547cba, #34568a); border-color: #29456f; }
+    .text-btn {
+      margin-top: 10px;
+      padding: 11px;
+      background: #28352a;
+      color: #c4d9bd;
+      font-size: 11px;
+      border: 1px solid #52674d;
+      box-shadow: 0 3px 0 rgba(0,0,0,.25);
+    }
+    button:disabled { opacity: .6; cursor: wait; transform: none !important; }
+
+    .info {
+      margin-top: 17px;
+      color: #91a58d;
+      font-size: 10px;
+      line-height: 1.8;
+      text-align: center;
+    }
+    .version-item {
+      padding: 18px 0;
+      border-bottom: 1px solid #344635;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .version-item strong { font-size: 12px; }
+    .tag {
+      padding: 7px 9px;
+      border-radius: 3px;
+      background: #294b2c;
+      border: 1px solid #4e7944;
+      color: #a7ef8b;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .8px;
+      white-space: nowrap;
+      box-shadow: inset 0 1px rgba(255,255,255,.08);
+    }
+    footer {
+      width: min(1080px, 90%);
+      margin: 34px auto 20px;
+      padding: 15px 0 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      color: #82947f;
+      font-size: 10px;
+      border-top: 1px solid #2c3c2d;
+    }
+    .notice {
+      display: none;
+      margin-top: 18px;
+      padding: 14px;
+      border: 1px solid #526d49;
+      border-left: 4px solid #79c85b;
+      border-radius: 4px;
+      background: #17241a;
+      color: #d8e8d2;
+      font-size: 12px;
+      line-height: 1.7;
+      white-space: pre-line;
+    }
+    .notice.show { display: block; }
+    .notice.error { color: var(--danger); border-color: #754343; border-left-color: #e16a6a; }
+    .account-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 18px;
+      padding: 13px;
+      background: #111b13;
+      border: 1px solid #42583e;
+      border-radius: 4px;
+      box-shadow: inset 0 2px 7px rgba(0,0,0,.2);
+    }
+    .account-name { font-size: 11px; color: #dceade; overflow-wrap: anywhere; }
+    .hidden { display: none !important; }
+
+    @media(max-width: 720px) {
+      header { padding: 12px 5%; }
+      main { margin-top: 20px; }
+      .hero { padding: 26px; min-height: 270px; background-position: 58% center; }
+      .eyebrow { font-size: 8px; }
+      .content { grid-template-columns: 1fr; }
+      .card { padding: 22px; }
+      footer { flex-direction: column; }
+      .status { max-width: 48%; line-height: 1.5; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="brand">
+    <img class="logo" src="./blokk.PNG" alt="LabX Logo">
+    <div>
+      <div class="brand-name">LabX</div>
+      <div class="brand-sub">Minecraft Java Edition</div>
+    </div>
+  </div>
+  <div class="status" id="connectionStatus">Ready to play</div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="eyebrow">YOUR MINECRAFT EXPERIENCE</div>
+    <h1>Welcome to LabX.</h1>
+    <p>
+      Your Minecraft adventure starts here.
+      Choose single-player or sign in with Microsoft to play multiplayer.
+    </p>
+  </section>
+
+  <div class="content">
+    <section class="card">
+      <h2>Play Minecraft</h2>
+      <p class="description">
+        Choose a game mode and Minecraft Java Edition version.
+        Multiplayer requires a Microsoft account with Minecraft Java Edition access.
+      </p>
+
+      <div class="field">
+        <label for="version">Minecraft version</label>
+        <select id="version">
+          <option value="1.21.4">1.21.4</option>
+          <option value="1.21.3">1.21.3</option>
+          <option value="1.21.1">1.21.1</option>
+          <option value="1.20.4">1.20.4</option>
+          <option value="1.20.1">1.20.1</option>
+        </select>
+      </div>
+
+      <!-- Existing single-player flow: retained as the original labx://play URL. -->
+      <button class="play-btn" id="singlePlayerButton">▶ PLAY SINGLEPLAYER</button>
+
+      <div class="field">
+        <h2>Multiplayer</h2>
+        <p class="description">
+          Sign in to Microsoft first. Once authenticated, launch the selected version
+          using your Minecraft Java account.
+        </p>
+        <div class="account-row">
+          <span class="account-name" id="accountStatus">Not signed in</span>
+          <span class="tag" id="accountTag">OFFLINE</span>
+        </div>
+        <button class="secondary-btn" id="loginButton">SIGN IN WITH MICROSOFT</button>
+        <button class="play-btn" id="multiplayerButton">▶ PLAY MULTIPLAYER</button>
+        <button class="text-btn hidden" id="logoutButton">Sign out</button>
+      </div>
+
+      <div class="notice" id="notice" role="status" aria-live="polite"></div>
+      <p class="info">
+        LabX must be installed on your computer. The first launch may take longer
+        while Minecraft files download.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Launcher Information</h2>
+      <p class="description">Your LabX overview.</p>
+
+      <div class="version-item">
+        <div><strong>Launcher</strong><br><span class="description">LabX Launcher</span></div>
+        <span class="tag">LABX</span>
+      </div>
+      <div class="version-item">
+        <div><strong>Game</strong><br><span class="description">Minecraft Java Edition</span></div>
+        <span class="tag">JAVA</span>
+      </div>
+      <div class="version-item">
+        <div><strong>Authentication</strong><br><span class="description">Microsoft account for multiplayer</span></div>
+        <span class="tag">MS LOGIN</span>
+      </div>
+      <div class="version-item">
+        <div><strong>Website protocol</strong><br><span class="description">labx://</span></div>
+        <span class="tag">APP</span>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <span>© 2026 LabX Launcher · Version 3.0.0 Alpha · Made by VenomStudios-Dev</span>
+  <span>Independent project. Not affiliated with Mojang or Microsoft.</span>
+</footer>
+
+<script>
+"use strict";
+
+const singlePlayerButton = document.getElementById("singlePlayerButton");
+const loginButton = document.getElementById("loginButton");
+const multiplayerButton = document.getElementById("multiplayerButton");
+const logoutButton = document.getElementById("logoutButton");
+const versionSelect = document.getElementById("version");
+const notice = document.getElementById("notice");
+const connectionStatus = document.getElementById("connectionStatus");
+const accountStatus = document.getElementById("accountStatus");
+const accountTag = document.getElementById("accountTag");
+
+const isElectronApp = Boolean(window.labx);
+let isLaunching = false;
+let isAuthenticated = false;
+let authenticatedUsername = null;
+
+function showNotice(message, isError = false) {
+  notice.textContent = message;
+  notice.classList.add("show");
+  notice.classList.toggle("error", isError);
+}
+
+function setBusy(busy, message) {
+  isLaunching = busy;
+  singlePlayerButton.disabled = busy;
+  loginButton.disabled = busy;
+  multiplayerButton.disabled = busy;
+  if (message) connectionStatus.textContent = message;
+}
+
+function selectedVersion() {
+  const version = String(versionSelect.value);
+  if (!/^\d+\.\d+(?:\.\d+)?$/.test(version)) {
+    throw new Error("Invalid Minecraft version.");
+  }
+  return version;
+}
+
+function updateAccount(username) {
+  isAuthenticated = Boolean(username);
+  authenticatedUsername = username || null;
+  accountStatus.textContent = username ? "Signed in as " + username : "Not signed in";
+  accountTag.textContent = username ? "SIGNED IN" : "OFFLINE";
+  logoutButton.classList.toggle("hidden", !username);
+  loginButton.textContent = username ? "MICROSOFT ACCOUNT CONNECTED" : "SIGN IN WITH MICROSOFT";
+}
+
+function requireElectronBridge() {
+  if (!isElectronApp) {
+    showNotice(
+      "Opening the LabX desktop app. Sign in with Microsoft there, then choose Play Multiplayer."
+    );
+    connectionStatus.textContent = "Opening LabX...";
+    window.location.href = "labx://open";
+    return false;
+  }
+
+  return true;
+}
+
+/*
+ * Single-player intentionally keeps the original website protocol behavior:
+ * labx://play?version=<version>
+ * No multiplayer mode or Microsoft authentication is added to this path.
+ */
+singlePlayerButton.addEventListener("click", () => {
+  if (isLaunching) return;
+
+  let version;
+  try {
+    version = selectedVersion();
+  } catch (error) {
+    connectionStatus.textContent = "Invalid version";
+    showNotice(error.message, true);
+    return;
+  }
+
+  if (isElectronApp) {
+    setBusy(true, "Launching single-player...");
+    showNotice("Starting Minecraft single-player...");
+    window.labx.launch({ version, mode: "singleplayer" })
+      .then(() => {
+        connectionStatus.textContent = "Minecraft started";
+        showNotice("Minecraft single-player launch started.");
+      })
+      .catch(error => {
+        connectionStatus.textContent = "Launch failed";
+        showNotice(error.message || "Could not launch Minecraft.", true);
+      })
+      .finally(() => setBusy(false));
+    return;
+  }
+
+  const protocolUrl = "labx://play?version=" + encodeURIComponent(version);
+  showNotice("Opening LabX. If your browser asks for permission, choose Open LabX.");
+  connectionStatus.textContent = "Connecting to LabX...";
+  window.location.href = protocolUrl;
+});
+
+/* Microsoft login is available inside the Electron application via preload.js. */
+loginButton.addEventListener("click", async () => {
+  if (isLaunching) return;
+  if (!requireElectronBridge()) return;
+
+  try {
+    setBusy(true, "Opening Microsoft login...");
+    showNotice("Opening Microsoft sign-in...");
+    const result = await window.labx.login();
+
+    if (!result || result.success !== true || !result.username) {
+      throw new Error("Microsoft login did not return a valid Minecraft profile.");
+    }
+
+    updateAccount(result.username);
+    connectionStatus.textContent = "Microsoft login successful";
+    showNotice("Signed in successfully as " + result.username + ". You can now launch multiplayer.");
+  } catch (error) {
+    updateAccount(null);
+    connectionStatus.textContent = "Microsoft login failed";
+    showNotice(error.message || "Microsoft login failed.", true);
+  } finally {
+    setBusy(false);
+  }
+});
+
+/* Multiplayer uses the authenticated launch path already exposed by minecraft.js. */
+multiplayerButton.addEventListener("click", async () => {
+  if (isLaunching) return;
+  if (!requireElectronBridge()) return;
+
+  if (!isAuthenticated) {
+    showNotice("Please sign in with Microsoft before launching multiplayer.", true);
+    connectionStatus.textContent = "Microsoft login required";
+    return;
+  }
+
+  let version;
+  try {
+    version = selectedVersion();
+  } catch (error) {
+    connectionStatus.textContent = "Invalid version";
+    showNotice(error.message, true);
+    return;
+  }
+
+  try {
+    setBusy(true, "Launching multiplayer...");
+    showNotice("Preparing authenticated Minecraft multiplayer...");
+    const result = await window.labx.launch({ version, mode: "multiplayer" });
+
+    if (result && result.username) updateAccount(result.username);
+    connectionStatus.textContent = "Minecraft multiplayer started";
+    showNotice("Minecraft multiplayer launch started.");
+  } catch (error) {
+    connectionStatus.textContent = "Multiplayer launch failed";
+    showNotice(error.message || "Could not launch Minecraft.", true);
+  } finally {
+    setBusy(false);
+  }
+});
+
+logoutButton.addEventListener("click", async () => {
+  if (isLaunching || !isElectronApp) return;
+
+  try {
+    await window.labx.logout();
+    updateAccount(null);
+    connectionStatus.textContent = "Signed out";
+    showNotice("Microsoft account logged out.");
+  } catch (error) {
+    showNotice(error.message || "Could not sign out.", true);
+  }
+});
+
+/* Forward backend status, progress, and error events to the page when in Electron. */
+if (isElectronApp) {
+  window.labx.onStatus(message => {
+    connectionStatus.textContent = String(message);
+  });
+
+  window.labx.onProgress(data => {
+    if (data && data.message) showNotice(data.message);
+    else if (data && typeof data.percent === "number") {
+      showNotice("Download progress: " + data.percent + "%");
+    }
+  });
+
+  window.labx.onError(message => {
+    showNotice(String(message), true);
+    connectionStatus.textContent = "Launcher error";
+  });
+} else {
+  /* Website cannot use Electron's contextBridge API. */
+  loginButton.textContent = "SIGN IN IN LABX APP";
+  multiplayerButton.textContent = "OPEN LABX FOR MULTIPLAYER";
+}
+</script>
+</body>
+</html>
+
