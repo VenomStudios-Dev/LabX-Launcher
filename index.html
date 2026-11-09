@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -285,6 +285,39 @@
     .account-name { font-size: 11px; color: #dceade; overflow-wrap: anywhere; }
     .hidden { display: none !important; }
 
+    /* New link to the standalone JavaScript developer tool. */
+    .developer-card {
+      margin-top: 20px;
+      padding: 22px 27px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      background: linear-gradient(145deg, rgba(32, 47, 34, .98), rgba(22, 32, 24, .98));
+      border: 2px solid #40563d;
+      border-radius: 5px;
+      box-shadow: 0 7px 0 rgba(0,0,0,.24), inset 0 1px rgba(255,255,255,.035);
+    }
+    .developer-card .eyebrow { font-size: 8px; }
+    .developer-card h2 { margin: 9px 0 7px; font-size: 17px; }
+    .developer-card p { color: var(--muted); font-size: 12px; line-height: 1.7; max-width: 650px; }
+    .developer-link {
+      flex: 0 0 auto;
+      display: inline-block;
+      padding: 13px 16px;
+      color: #f4ffed;
+      background: linear-gradient(180deg, #547cba, #34568a);
+      border: 2px solid #29456f;
+      border-radius: 4px;
+      text-decoration: none;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .5px;
+      box-shadow: 0 4px 0 rgba(0,0,0,.3);
+    }
+    .developer-link:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
     @media(max-width: 720px) {
       header { padding: 12px 5%; }
       main { margin-top: 20px; }
@@ -294,6 +327,8 @@
       .card { padding: 22px; }
       footer { flex-direction: column; }
       .status { max-width: 48%; line-height: 1.5; }
+      .developer-card { align-items: stretch; flex-direction: column; padding: 22px; }
+      .developer-link { width: 100%; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -390,6 +425,16 @@
       </div>
     </section>
   </div>
+
+  <!-- New JavaScript tool entry point; the existing launcher controls above are unchanged. -->
+  <section class="developer-card" id="developerToolsCard" aria-labelledby="developerToolsTitle">
+    <div>
+      <div class="eyebrow">FOR JAVASCRIPT DEVELOPERS</div>
+      <h2 id="developerToolsTitle">LabX JavaScript Analyzer</h2>
+      <p>Review JavaScript code for syntax errors, risky patterns, and common mistakes. The analyzer runs locally in your browser and does not execute or upload your code.</p>
+    </div>
+    <a class="developer-link" href="./js-analyzer.html">OPEN JAVASCRIPT ANALYZER →</a>
+  </section>
 </main>
 
 <footer>
@@ -411,6 +456,8 @@ const accountStatus = document.getElementById("accountStatus");
 const accountTag = document.getElementById("accountTag");
 
 const isElectronApp = Boolean(window.labx);
+const developerToolsCard = document.getElementById("developerToolsCard");
+if (isElectronApp) developerToolsCard.classList.add("hidden");
 let isLaunching = false;
 let isAuthenticated = false;
 let authenticatedUsername = null;
@@ -598,4 +645,3 @@ if (isElectronApp) {
 </script>
 </body>
 </html>
-

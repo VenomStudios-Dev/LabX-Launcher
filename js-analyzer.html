@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101710">
+  <meta name="description" content="A browser-based JavaScript code analyzer for syntax checks and common code-quality issues.">
+  <title>JavaScript Analyzer - LabX</title>
+  <link rel="icon" type="image/png" href="./blokk.png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;500;700;900&display=swap');
+    :root {
+      --bg: #101710; --panel: #1b251d; --panel2: #222f24; --green: #62c94f;
+      --green2: #3b963d; --text: #f2f6ed; --muted: #a5b49f; --border: #3b513b;
+      --danger: #ff9292; --warning: #ffd27a; --blue: #9dc5ff;
+      --pixel: "Press Start 2P", monospace; --body: "Roboto", Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh; color: var(--text); font-family: var(--body); overflow-x: hidden;
+      background: radial-gradient(ellipse at 50% -15%, rgba(74,135,57,.2), transparent 55%),
+        linear-gradient(rgba(9,15,10,.94), rgba(9,15,10,.97)),
+        repeating-linear-gradient(0deg, #172219 0 2px, #141e16 2px 4px);
+    }
+    header {
+      min-height: 76px; padding: 13px 6%; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      background: linear-gradient(180deg, #1b2a1d, #121b14); border-bottom: 3px solid #344b32; box-shadow: 0 5px 0 rgba(0,0,0,.22);
+    }
+    .brand { display: flex; align-items: center; gap: 13px; }
+    .logo { width: 44px; height: 44px; object-fit: contain; }
+    .brand-name { font-size: 18px; font-weight: 900; letter-spacing: 1px; }
+    .brand-sub { color: #a9c49f; font-size: 10px; margin-top: 5px; letter-spacing: 1.5px; text-transform: uppercase; }
+    .back-link { color: #cfe8c6; border: 1px solid #40583e; background: rgba(9,16,10,.55); border-radius: 4px; padding: 10px 13px; text-decoration: none; font-size: 11px; font-weight: 700; }
+    .back-link:hover { border-color: #8bd66b; color: #fff; }
+    main { width: min(1120px, 92%); margin: 34px auto 0; }
+    .hero { padding: 28px 32px; border: 2px solid #60794e; border-radius: 5px; background: linear-gradient(115deg, rgba(10,20,11,.98), rgba(29,49,28,.92)); box-shadow: 0 7px 0 rgba(0,0,0,.22); }
+    .eyebrow { color: #a7ed83; font-family: var(--pixel); font-size: 8px; line-height: 1.9; }
+    h1 { margin: 13px 0 9px; font-size: clamp(27px, 4vw, 40px); letter-spacing: -.8px; }
+    .hero p { max-width: 780px; color: #cfddc8; font-size: 14px; line-height: 1.75; }
+    .privacy-note { display: inline-flex; align-items: center; gap: 8px; margin-top: 15px; padding: 8px 11px; border: 1px solid #45613d; border-radius: 4px; color: #bde6ac; font-size: 11px; background: rgba(15,35,15,.55); }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr); gap: 20px; margin-top: 20px; align-items: start; }
+    .panel { min-width: 0; padding: 22px; background: linear-gradient(145deg, rgba(32,47,34,.98), rgba(22,32,24,.98)); border: 2px solid #40563d; border-radius: 5px; box-shadow: 0 7px 0 rgba(0,0,0,.24), inset 0 1px rgba(255,255,255,.035); }
+    .panel h2 { font-size: 17px; margin-bottom: 8px; }
+    .muted { color: var(--muted); font-size: 12px; line-height: 1.7; }
+    .editor-label { display: block; color: #c9e4bd; margin: 18px 0 9px; font-size: 10px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+    textarea {
+      display: block; width: 100%; min-height: 420px; resize: vertical; padding: 15px;
+      border: 2px solid #496247; border-radius: 4px; outline: none; background: #0d150f; color: #e6f1e0;
+      font: 12px/1.65 Consolas, "Courier New", monospace; tab-size: 2; box-shadow: inset 0 3px 9px rgba(0,0,0,.3);
+    }
+    textarea:focus { border-color: #8bd66b; box-shadow: 0 0 0 3px rgba(105,190,76,.14); }
+    .toolbar { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 13px; }
+    button, .file-button {
+      min-height: 40px; padding: 11px 14px; border: 2px solid rgba(0,0,0,.25); border-radius: 4px;
+      color: #fff; font-size: 11px; font-weight: 900; letter-spacing: .35px; cursor: pointer;
+      box-shadow: 0 4px 0 rgba(0,0,0,.28); transition: filter .15s ease, transform .15s ease;
+    }
+    button:hover, .file-button:hover { filter: brightness(1.13); transform: translateY(-1px); }
+    button:active, .file-button:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,.28); }
+    button:disabled { opacity: .55; cursor: wait; }
+    .primary { background: linear-gradient(180deg, #65bd45, #398d35); border-color: #2c702e; }
+    .secondary { background: linear-gradient(180deg, #547cba, #34568a); border-color: #29456f; }
+    .subtle { background: #28352a; color: #c4d9bd; border-color: #52674d; }
+    .file-button { display: inline-flex; align-items: center; background: #28352a; color: #c4d9bd; border-color: #52674d; }
+    .file-button input { display: none; }
+    .results-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 12px; }
+    .summary { padding: 13px; border: 1px solid #40583e; border-radius: 4px; background: #111b13; color: #dceade; font-size: 12px; line-height: 1.65; }
+    .summary strong { color: #fff; }
+    .summary[data-state="success"] { border-left: 4px solid #70c65b; }
+    .summary[data-state="warning"] { border-left: 4px solid #d9a94e; }
+    .summary[data-state="error"] { border-left: 4px solid #d76b6b; }
+    .finding-list { display: grid; gap: 10px; margin-top: 12px; }
+    .finding { padding: 13px; border: 1px solid #3b513b; border-left: 4px solid #78936e; border-radius: 4px; background: rgba(13,21,15,.75); }
+    .finding.error { border-left-color: #e16a6a; }
+    .finding.warning { border-left-color: #d9a94e; }
+    .finding.info { border-left-color: #6da3df; }
+    .finding-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .finding-title { font-size: 12px; font-weight: 900; }
+    .severity { padding: 4px 6px; border-radius: 3px; background: #263b29; color: #c7e5bd; font-size: 9px; font-weight: 900; text-transform: uppercase; }
+    .finding.error .severity { background: #4a2424; color: #ffb2b2; }
+    .finding.warning .severity { background: #48391e; color: #ffdc91; }
+    .finding.info .severity { background: #20364c; color: #b8d8ff; }
+    .finding p { margin-top: 8px; color: #bdcbb8; font-size: 11px; line-height: 1.65; }
+    .location { margin-top: 8px; color: #91a58d; font: 10px Consolas, monospace; }
+    .code-line { display: block; margin-top: 7px; padding: 8px; overflow-wrap: anywhere; border-radius: 3px; background: #090f0a; color: #d9e7d3; font: 10px/1.55 Consolas, monospace; white-space: pre-wrap; }
+    .empty-state { padding: 22px 13px; text-align: center; border: 1px dashed #496247; border-radius: 4px; color: #9cac96; font-size: 12px; line-height: 1.7; }
+    .rules { display: grid; gap: 10px; margin-top: 15px; }
+    .rule { padding: 11px; border: 1px solid #354a35; border-radius: 4px; background: rgba(13,21,15,.48); }
+    .rule strong { display: block; color: #dbe9d5; font-size: 11px; margin-bottom: 4px; }
+    .rule span { color: #9eaf98; font-size: 10px; line-height: 1.6; }
+    .disclaimer { margin-top: 15px; padding: 12px; border: 1px solid #5c5034; border-radius: 4px; background: rgba(54,43,20,.28); color: #d8c99f; font-size: 10px; line-height: 1.65; }
+    footer { width: min(1120px, 92%); margin: 32px auto 20px; padding: 15px 0 20px; display: flex; justify-content: space-between; gap: 15px; color: #82947f; font-size: 10px; border-top: 1px solid #2c3c2d; }
+    @media (max-width: 850px) { .workspace { grid-template-columns: 1fr; } textarea { min-height: 340px; } }
+    @media (max-width: 600px) { header { padding: 12px 4%; } main { margin-top: 20px; } .hero { padding: 22px; } .panel { padding: 16px; } .toolbar > * { flex: 1 1 auto; justify-content: center; } footer { flex-direction: column; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; } }
+  </style>
+  <script src="./js-analyzer.js" defer></script>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img class="logo" src="./blokk.png" alt="LabX Logo">
+      <div>
+        <div class="brand-name">LabX</div>
+        <div class="brand-sub">JavaScript Developer Tools</div>
+      </div>
+    </div>
+    <a class="back-link" href="./index.html">← BACK TO LABX</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">LABX DEVELOPER TOOLKIT</div>
+      <h1>JavaScript Analyzer</h1>
+      <p>Inspect JavaScript source for syntax problems and common reliability, security, and maintainability issues. Review each finding with its location and a practical explanation.</p>
+      <div class="privacy-note">🔒 Local analysis · Your code is not uploaded or executed</div>
+    </section>
+
+    <div class="workspace">
+      <section class="panel" aria-labelledby="editorTitle">
+        <h2 id="editorTitle">Code editor</h2>
+        <p class="muted">Paste JavaScript below, load a local .js file, or try the example. Select <strong>Analyze code</strong> to run the checks.</p>
+        <label class="editor-label" for="sourceCode">JavaScript source</label>
+        <textarea id="sourceCode" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="JavaScript source code" placeholder="// Paste your JavaScript code here..."></textarea>
+        <div class="toolbar">
+          <button class="primary" id="analyzeButton" type="button">ANALYZE CODE</button>
+          <button class="secondary" id="exampleButton" type="button">LOAD EXAMPLE</button>
+          <label class="file-button" for="fileInput">OPEN .JS FILE<input id="fileInput" type="file" accept=".js,.mjs,.cjs,.txt,text/javascript"></label>
+          <button class="subtle" id="clearButton" type="button">CLEAR</button>
+        </div>
+        <p class="muted" style="margin-top:12px">Maximum input size: 200,000 characters. The analyzer performs static checks only.</p>
+      </section>
+
+      <aside class="panel" aria-labelledby="resultsTitle">
+        <div class="results-top">
+          <div>
+            <h2 id="resultsTitle">Analysis results</h2>
+            <p class="muted">Findings appear here after analysis.</p>
+          </div>
+          <span class="severity" id="resultCount">0 findings</span>
+        </div>
+        <div class="summary" id="summary" data-state="idle" role="status" aria-live="polite">Ready. Add JavaScript code and select <strong>Analyze code</strong>.</div>
+        <div class="finding-list" id="findingList">
+          <div class="empty-state">No analysis has been run yet.</div>
+        </div>
+      </aside>
+    </div>
+
+    <section class="panel" style="margin-top:20px" aria-labelledby="checksTitle">
+      <h2 id="checksTitle">What the analyzer checks</h2>
+      <p class="muted">The analyzer combines the browser's JavaScript parser with targeted source-level rules.</p>
+      <div class="rules">
+        <div class="rule"><strong>Syntax validation</strong><span>Checks whether the source can be parsed by the browser's JavaScript engine. The source is compiled for validation but never executed.</span></div>
+        <div class="rule"><strong>Correctness and maintainability</strong><span>Flags loose equality, legacy var declarations, debugger statements, and empty catch blocks.</span></div>
+        <div class="rule"><strong>Security-sensitive patterns</strong><span>Highlights eval, dynamic Function construction, document.write, string-based timers, and assignments to innerHTML.</span></div>
+        <div class="rule"><strong>Developer reminders</strong><span>Finds TODO/FIXME comments and common console logging that may need attention before release.</span></div>
+      </div>
+      <div class="disclaimer">This is a static, rule-based analyzer—not an AI system and not a complete substitute for ESLint, TypeScript, tests, or a security review. Some findings require human judgment. It does not execute your source code.</div>
+    </section>
+  </main>
+
+  <footer>
+    <span>© 2026 LabX · JavaScript Developer Tools</span>
+    <span>Independent project. Not affiliated with Mojang or Microsoft.</span>
+  </footer>
+</body>
+</html>
